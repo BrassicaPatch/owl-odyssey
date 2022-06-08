@@ -1,3 +1,9 @@
+Specification is what the game is and its contents
+vs
+Gameplay is what the player is doing and how theyre interacting
+with the game and its contents.
+
+
 "A star fell from the sky"
 
 -Many star fragments. Have to find them all and return them
