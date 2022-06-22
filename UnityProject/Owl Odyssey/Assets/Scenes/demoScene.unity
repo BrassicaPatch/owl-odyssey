@@ -24814,8 +24814,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  playerRotation: 100
-  smooth: 5
+  playerRotation: 5000
+  smooth: 500
+  curAttk: 0
   gravity: 9.81
   curGravity: 0
   constGravity: -0.6
@@ -24823,6 +24824,7 @@ MonoBehaviour:
   camera: {fileID: 1967256643}
   display: {x: 0, y: 0, z: 0}
   controller: {fileID: 4014055021859335073}
+  animator: {fileID: 4014055021851870274}
   audioSource: {fileID: 0}
   audDelay: 0.38
 --- !u!4 &4014055021859335072

@@ -8,6 +8,8 @@ public class playerController : MonoBehaviour
     public float speed = 10f;
     public float playerRotation = 100f;
     public float smooth = 5.0f;
+    public bool curAttk; // = false;
+    public bool canMove = true;
 
     [Header("Gravity")]
     public float gravity; //= 9.81f;
@@ -22,6 +24,7 @@ public class playerController : MonoBehaviour
     public Camera camera;
     public Vector3 display;
     public CharacterController controller;
+    public Animator animator;
     public AudioSource audioSource;
 
     public float audDelay = 0.25f;
@@ -39,34 +42,43 @@ public class playerController : MonoBehaviour
         calcGravity();
         move();
         rotate();
+        attack();
     }
 
     void move()
     {
-        float horizontal = -Input.GetAxisRaw("Vertical");
-        float vertical = Input.GetAxisRaw("Horizontal");
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-
-        if (direction.magnitude >= 0.1f)
+        if (canMove && !curAttk)
         {
-            controller.Move((direction * speed * Time.deltaTime) + gravityMove);
-            if (!walkAud)
+            float horizontal = -Input.GetAxisRaw("Vertical");
+            float vertical = Input.GetAxisRaw("Horizontal");
+            Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+            if (direction.magnitude >= 0.1f)
             {
-                //StartCoroutine(walk());
+                controller.Move((direction * speed * Time.deltaTime) + gravityMove);
+                animator.SetBool("walk", true);
+
+                if (!walkAud)
+                {
+                    //StartCoroutine(walk());
+                }
+            }
+            else
+            {
+                animator.SetBool("walk", false);
+                controller.Move(gravityMove);
             }
         }
-        else
-        {
-            controller.Move(gravityMove);
-        }
-
     }
 
     void rotate()
     {
-        float lookAngle = Mathf.Atan2(Input.mousePosition.y - (Screen.height / 2), Input.mousePosition.x - (Screen.width / 2)) * Mathf.Rad2Deg;
+        float lookAngle = Mathf.Atan2(Input.mousePosition.y - ((Screen.height / 2) - ((Screen.height/2) - camera.WorldToScreenPoint(controller.transform.position).y)), Input.mousePosition.x - (Screen.width/2)) * Mathf.Rad2Deg;
+        //float lookAngle = Mathf.Atan2(Input.mousePosition.y - (Screen.height / 2), Input.mousePosition.x - (Screen.width / 2)) * Mathf.Rad2Deg;
+        //Debug.Log(Input.mousePosition);
 
-        Quaternion target = Quaternion.Euler(0, lookAngle, 0);
+        Quaternion target = Quaternion.Euler(0, -lookAngle, 0);
+        //Debug.Log(target);
 
         controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, target, Time.deltaTime * smooth);
     }
@@ -100,4 +112,29 @@ public class playerController : MonoBehaviour
     //    //yield return new WaitForSeconds(audDelay);
     //    //walkAud = false;
     //}
+
+    void attack()
+    {
+        if (Input.GetMouseButtonDown(0) && !curAttk)
+        {
+            canMove = false;
+            animator.SetBool("attack", true);
+            Debug.Log("Attacked");
+
+            //if (collisionBool)
+            //{
+            //    collisionObj.GetComponent<enemyAI>().TakeDamage(10);
+            //    hit.Play();
+            //}
+            //else
+            //    miss.Play();
+        }
+        else if (!curAttk)
+        {
+            canMove = true;
+            animator.SetBool("attack", false);
+            //Debug.Log("Attack: " + curAttk);
+        }
+
+    }
 }
